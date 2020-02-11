@@ -1,0 +1,9 @@
+ip routing
+service routing protocols model multi-agent
+router bgp {{ bgp_as }}
+   bgp asn notation asdot
+   maximum-paths 4 ecmp 4
+   router-id {{ router_id }}
+   update wait-for-convergence
+   update wait-install
+   distance bgp 20 200 200

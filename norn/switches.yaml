@@ -1,0 +1,71 @@
+---
+- name: sp01
+  role: spine
+  bgp-as: 65000
+  interfaces:
+    - et1:
+        desc: "lf03, et1"
+        ip: 10.255.1.0/31
+    - et2:
+        desc: "lf04, et1"
+        ip: 10.255.1.2/31
+    - et3:
+        desc: "lf05, et1"
+        ip: 10.255.1.4/31
+    - lo0:
+        ip: 10.0.254.101/32
+
+- name: sp02
+  role: spine
+  bgp-as: 65000
+  interfaces:
+    - et1:
+        desc: "lf03, et2"
+        ip: 10.255.2.0/31
+    - et2:
+        desc: "lf04, et2"
+        ip: 10.255.2.2/31
+    - et3:
+        desc: "lf05, et2"
+        ip: 10.255.2.4/31
+    - lo0:
+        ip: 10.0.254.102/32
+
+- name: lf03
+  role: compute
+  bgp-as: 65203
+  interfaces:
+    - et1:
+        desc: "sp01, et1"
+        ip: 10.255.1.1/31
+    - et2:
+        desc: "sp02, et1"
+        ip: 10.255.2.1/31
+    - lo0:
+        ip: 10.0.254.103/32
+
+- name: lf04
+  role: compute
+  bgp-as: 65204
+  interfaces:
+    - et1:
+        desc: "sp01, et2"
+        ip: 10.255.1.3/31
+    - et2:
+        desc: "sp02, et2"
+        ip: 10.255.2.3/31
+    - lo0:
+        ip: 10.0.254.104/32
+
+- name: lf05
+  role: compute
+  bgp-as: 65205
+  interfaces:
+    - et1:
+        desc: "sp01, et3"
+        ip: 10.255.1.5/31
+    - et2:
+        desc: "sp02, et3"
+        ip: 10.255.2.5/31
+    - lo0:
+        ip: 10.0.254.105/32

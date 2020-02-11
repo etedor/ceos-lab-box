@@ -1,0 +1,28 @@
+vlan {{ vlan }}
+   name mlag
+   trunk group mlag
+interface vlan {{ vlan }}
+   description mlag
+   ip address {{ ip }}
+   no autostate
+interface Port-Channel{{ port_channel }}
+   description mlag
+   switchport mode trunk
+   switchport trunk group mlag
+mlag configuration
+   domain-id {{ domain }}
+   local-interface vlan {{ vlan }}
+   peer-address {{ peer_ip }}
+   peer-link Port-Channel{{ port_channel }}
+   ! reload-delay mlag 420
+   ! reload-delay non-mlag 360
+   reload-delay mode lacp standby
+{% for interface in interfaces %}
+interface {{ interface }}
+   description mlag
+   mtu 9214
+   switchport mode trunk
+   switchport trunk group mlag
+   channel-group {{ port_channel }} mode active
+{% endfor %}
+no spanning-tree vlan-id {{ vlan }}

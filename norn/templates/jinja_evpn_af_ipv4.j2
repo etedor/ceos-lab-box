@@ -1,0 +1,7 @@
+   !
+   address-family ipv4
+      no neighbor OVERLAY activate
+      neighbor UNDERLAY activate
+      {% for network in networks %}
+      network {{ network }}
+      {% endfor %}

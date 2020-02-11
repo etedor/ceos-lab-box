@@ -1,0 +1,15 @@
+ip routing
+service routing protocols model multi-agent
+router bgp {{ bgp_as }}
+   bgp asn notation asdot
+   maximum-paths 4 ecmp 4
+   router-id {{ router_id }}
+   distance bgp 20 200 200
+   neighbor UNDERLAY peer-group
+   neighbor UNDERLAY fall-over bfd
+   neighbor UNDERLAY send-community standard
+   neighbor OVERLAY peer-group
+   neighbor OVERLAY update-source Loopback0
+   neighbor OVERLAY send-community extended
+   neighbor OVERLAY maximum-routes 0
+   neighbor OVERLAY ebgp-multihop 5

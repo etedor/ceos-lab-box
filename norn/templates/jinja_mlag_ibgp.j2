@@ -1,0 +1,5 @@
+   neighbor UNDERLAY-MLAG peer-group
+   neighbor UNDERLAY-MLAG remote-as {{ bgp_as }}
+   neighbor UNDERLAY-MLAG next-hop-self
+   neighbor UNDERLAY-MLAG fall-over bfd
+   neighbor {{ mlag_neighbor }} peer-group UNDERLAY-MLAG

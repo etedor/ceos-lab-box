@@ -1,0 +1,17 @@
+---
+links:
+  - endpoints: ["sp01:eth0", "sp02:eth0", "lf03:eth0", "lf04:eth0", "lf05:eth0"]
+    driver: bridge
+  - endpoints: ["sp01:eth1", "lf03:eth1"]
+  - endpoints: ["sp01:eth2", "lf04:eth1"]
+  - endpoints: ["sp01:eth3", "lf05:eth1"]
+  - endpoints: ["sp02:eth1", "lf03:eth2"]
+  - endpoints: ["sp02:eth2", "lf04:eth2"]
+  - endpoints: ["sp02:eth3", "lf05:eth2"]
+
+VERSION: 2
+driver: veth
+PREFIX: lab
+CONF_DIR: ./config
+CEOS_IMAGE: ceos-lab:4.22.3M
+PUBLISH_BASE: 9000

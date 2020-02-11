@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+function attach() {
+  if [ -z "${1}" ]; then
+    ls_
+    echo "Enter the container ID, followed by [ENTER]:"
+    read -r container
+    docker exec -it "${container}" Cli
+  else
+    docker exec -it "${1}" Cli
+  fi
+}
+
+function cfg_mgmt() {
+  topology="${1}"
+  mgmt_network="${topology}_net-0"
+  gateway="$(docker network inspect "${mgmt_network}" |
+    jq ".[0].IPAM.Config[0].Gateway")"
+  for container in $(ls_id); do
+    ipv4="$(docker network inspect "${mgmt_network}" |
+      jq ".[0].Containers.\"${container}\".IPv4Address")"
+    name="$(docker network inspect "${mgmt_network}" |
+      jq ".[0].Containers.\"${container}\".Name")"
+    commands="configure; hostname ${name/"${topology}"_/}; username admin privilege 15 secret admin; interface Management0; ip address ${ipv4//\"/}; ip route 0.0.0.0/0 ${gateway//\"/}; management api http-commands; no shutdown; write"
+    fast_cli "${container}" "${commands}"
+  done
+}
+
+function fast_cli() {
+  params="${*:2}"
+  commands="${params//;/\\\n}"
+  docker exec "${1}" bash -c "echo -e ${commands} | FastCli -p15 -e"
+}
+
+function free_space() {
+  topology="${1}"
+  for container in $(ls_id); do
+    fast_cli "${container}" "bash rm -f /var/tmp/agents/core.*"
+  done
+}
+
+function ls_() {
+  topology="${1}"
+  docker container ls --no-trunc |
+    awk -v topology="${topology}" 'NR==1; { if ($2~"ceos-lab" && $NF~topology) print }'
+}
+
+function ls_id() {
+  topology="${1}"
+  ls_ "${topology}" |
+    tail -n+2 |
+    awk '{print $1}'
+}
+
+function multi_cli() {
+  topology="${1}"
+  for container in $(ls_id "${topology}"); do
+    docker container ls \
+      --filter id="${container}" \
+      --format "{{.ID}}\t{{.Names}}"
+    fast_cli "${container}" "${@:2}"
+  done
+}
+
+function main() {
+  "${1}" "${@:2}"
+}
+
+main "${@}"

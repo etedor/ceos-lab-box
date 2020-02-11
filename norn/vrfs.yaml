@@ -1,0 +1,9 @@
+---
+- name: production
+  vni: 25001
+
+- name: staging
+  vni: 25002
+
+- name: development
+  vni: 25003

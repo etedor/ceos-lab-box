@@ -1,0 +1,9 @@
+interface {{ type_ }}{{ number }}
+   {% if description %}
+   description {{ description }}
+   {% endif %}
+   {% if type_ == "Ethernet" and ip is defined %}
+   no switchport
+   mtu 9214
+   {% endif %}
+   ip address {{ ip }}

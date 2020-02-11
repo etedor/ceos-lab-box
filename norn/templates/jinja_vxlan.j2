@@ -1,0 +1,46 @@
+interface Vxlan1
+   vxlan source-interface Loopback{{ vxlan_src }}
+   {% for vlan in vlans %}
+   vxlan vlan {{ vlan.vid }} vni {{ vlan.vid + 10000 }}
+   {% endfor %}
+   {% for vrf in vrfs %}
+   vxlan vrf {{ vrf.name }} vni {{ vrf.vni }}
+   {% endfor %}
+!
+{% for vrf in vrfs %}
+vrf definition {{ vrf.name }}
+ip routing vrf {{ vrf.name }}
+{% endfor %}
+!
+{% for vlan in vlans %}
+vlan {{ vlan.vid }}
+   name {{ vlan.name }}
+interface Vlan{{ vlan.vid }}
+   description {{ vlan.name }}
+   {% if vlan.gateway %}
+   vrf forwarding {{ vlan.vrf }}
+   ip address virtual {{ vlan.gateway }}
+   {% else %}
+   shutdown
+   {% endif %}
+{% endfor %}
+!
+router bgp {{ bgp_as }}
+{% for vlan in vlans %}
+   vlan {{ vlan.vid }}
+      rd {{ router_id }}:{{ vlan.vid + 10000 }}
+      route-target import {{ vlan.vid + 10000 }}:{{ vlan.vid + 10000 }}
+      route-target export {{ vlan.vid + 10000 }}:{{ vlan.vid + 10000 }}
+      redistribute learned
+{% endfor %}
+{% for vrf in vrfs %}
+   vrf {{ vrf.name }}
+      rd {{ router_id }}:{{ vrf.vni }}
+      route-target import evpn {{ vrf.vni }}:{{ vrf.vni }}
+      route-target export evpn {{ vrf.vni }}:{{ vrf.vni }}
+      {% for vlan in vlans %}
+      {% if vlan.gateway and vlan.vrf == vrf.name %}
+      network {{ vlan.network }}
+      {% endif %}
+      {% endfor %}
+{% endfor %}

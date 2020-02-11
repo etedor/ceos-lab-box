@@ -1,0 +1,21 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+black = "*"
+flake8 = "*"
+pydocstyle = "*"
+
+[packages]
+dataclasses = "*"
+docker = "*"
+docker-topo = {editable = true,git = "https://github.com/networkop/docker-topo.git"}
+jinja2 = "*"
+netaddr = "*"
+nornir = "*"
+ruamel-yaml = "*"
+
+[pipenv]
+allow_prereleases = true
